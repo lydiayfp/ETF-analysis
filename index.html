@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Non-US Domiciled ETF Comparison — Nasdaq 100 & S&P 500 UCITS</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f5f7fa;
+    color: #1a1a2e;
+    line-height: 1.6;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  h1 { text-align: center; color: #16213e; margin-bottom: 4px; font-size: 26px; }
+  .subtitle { text-align: center; color: #666; margin-bottom: 24px; font-size: 14px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0; }
+  .tab-btn {
+    flex: 1; padding: 12px 20px; border: none; font-weight: 600; cursor: pointer;
+    border-radius: 8px 8px 0 0; font-size: 14px; transition: all 0.2s;
+  }
+  .tab-btn.active { background: #16213e; color: white; }
+  .tab-btn:not(.active) { background: #f0f0f0; color: #333; }
+  .tab-btn:not(.active):hover { background: #e0e0e0; }
+
+  /* Panels */
+  .panel { display: none; animation: fadeIn 0.3s ease; }
+  .panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Tables */
+  .table-wrap { overflow-x: auto; margin-bottom: 24px; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; background: white; }
+  thead th {
+    background: #16213e; color: white; padding: 14px 10px; text-align: center; font-weight: 600;
+    position: sticky; top: 0;
+  }
+  thead th:first-child { text-align: left; border-radius: 10px 0 0 0; }
+  thead th:last-child { border-radius: 0 10px 0 0; }
+  tbody tr:nth-child(even) { background: #f8f9fa; }
+  tbody td { padding: 11px 10px; text-align: center; border-bottom: 1px solid #eee; }
+  tbody td:first-child { text-align: left; font-weight: 600; color: #333; }
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .badge-acc { background: #e8f5e9; color: #2e7d32; }
+  .badge-swap { background: #fff3e0; color: #e65100; }
+  .best { color: #2ca02c; font-weight: 700; }
+  .worst { color: #d62728; font-weight: 700; }
+
+  /* Verdict boxes */
+  .verdict {
+    padding: 16px 20px; border-radius: 8px; margin-bottom: 24px; font-size: 14px;
+    border-left: 4px solid;
+  }
+  .verdict-nasdaq { background: #fff3e0; border-color: #ff9800; }
+  .verdict-sp500 { background: #e8f5e9; border-color: #4caf50; }
+
+  /* Risk cards */
+  .risk-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .risk-card {
+    background: white; border-radius: 10px; padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07); border-top: 4px solid;
+    transition: transform 0.15s;
+  }
+  .risk-card:hover { transform: translateY(-3px); }
+  .risk-card h3 { margin: 0 0 10px 0; font-size: 15px; }
+  .risk-card p { margin: 0; font-size: 13px; color: #444; line-height: 1.65; }
+
+  /* Chart placeholder */
+  .chart-box {
+    background: white; border-radius: 10px; padding: 24px; margin-bottom: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08); text-align: center;
+  }
+  .chart-box h3 { margin-bottom: 16px; color: #16213e; font-size: 16px; }
+  .chart-note { font-size: 12px; color: #888; margin-top: 12px; }
+
+  footer {
+    margin-top: 30px; padding-top: 16px; border-top: 1px solid #e0e0e0;
+    text-align: center; font-size: 12px; color: #888;
+  }
+
+  @media (max-width: 768px) {
+    .tabs { flex-direction: column; }
+    .tab-btn { border-radius: 8px; }
+    table { font-size: 11px; }
+    tbody td { padding: 8px 6px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📊 Non-US Domiciled ETF Comparison</h1>
+  <p class="subtitle">Nasdaq 100 & S&P 500 UCITS ETFs — Ireland Domiciled · Live Data Dashboard</p>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('nasdaq')">Nasdaq 100</button>
+    <button class="tab-btn" onclick="switchTab('sp500')">S&P 500</button>
+    <button class="tab-btn" onclick="switchTab('risks')">⚠️ Risks</button>
+  </div>
+
+  <!-- NASDAQ 100 -->
+  <div id="panel-nasdaq" class="panel active">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Criteria</th>
+            <th>iShares CNDX</th>
+            <th>Xtrackers XNAS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Ticker (LSE USD)</td><td>CNDX.L</td><td>XNAS.L</td></tr>
+          <tr><td>ISIN</td><td>IE00B53SZB19</td><td>IE00BMFKG444</td></tr>
+          <tr><td>Domicile</td><td>🇮🇪 Ireland</td><td>🇮🇪 Ireland</td></tr>
+          <tr><td>AUM</td><td class="best">~€17.1B</td><td>~$2.4B</td></tr>
+          <tr><td>TER (Expense Ratio)</td><td>0.30%</td><td class="best">0.20%</td></tr>
+          <tr><td>Spread Ratio</td><td class="best">~0.024%</td><td>~0.044%</td></tr>
+          <tr><td>NAV (USD)</td><td>N/A</td><td>$68.40</td></tr>
+          <tr><td>Price (USD)</td><td>$1,675.40</td><td>$67.68</td></tr>
+          <tr><td>Accumulating / Distributing</td><td><span class="badge badge-acc">Accumulating</span></td><td><span class="badge badge-acc">Accumulating</span></td></tr>
+          <tr><td>Avg Daily Volume (3M)</td><td>~22,284</td><td>~40,028</td></tr>
+          <tr><td>52W Range</td><td>$1,317 – $1,766</td><td>$53.27 – $71.25</td></tr>
+          <tr><td>YTD Return</td><td>N/A</td><td>~12.2%</td></tr>
+          <tr><td>Beta (3Y)</td><td>N/A</td><td>0.97</td></tr>
+          <tr><td>Inception</td><td>Jan 2010</td><td>Jan 2021</td></tr>
+          <tr><td>2Y Ann. Volatility</td><td>~19.9%</td><td>~19.9%</td></tr>
+          <tr><td>2Y Max Drawdown</td><td class="worst">–22.4%</td><td class="worst">–22.9%</td></tr>
+          <tr><td>Replication</td><td>Physical</td><td>Physical</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="verdict verdict-nasdaq">
+      <strong>💡 Verdict:</strong> <b>XNAS</b> wins on cost (0.20% vs 0.30%), but <b>CNDX</b> has 7× the AUM and a 15-year track record. For large positions, CNDX's liquidity edge may outweigh the 0.10% TER gap.
+    </div>
+
+    <div class="chart-box">
+      <h3>📈 Nasdaq 100 — 2-Year Normalized Performance</h3>
+      <svg viewBox="0 0 800 300" style="width:100%; max-width:800px;">
+        <defs>
+          <pattern id="grid" width="40" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 30" fill="none" stroke="#f0f0f0" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="800" height="300" fill="url(#grid)" />
+        <line x1="50" y1="250" x2="780" y2="250" stroke="#ccc" stroke-width="1"/>
+        <line x1="50" y1="250" x2="50" y2="20" stroke="#ccc" stroke-width="1"/>
+        <text x="40" y="255" text-anchor="end" font-size="10" fill="#888">100</text>
+        <text x="40" y="175" text-anchor="end" font-size="10" fill="#888">125</text>
+        <text x="40" y="95" text-anchor="end" font-size="10" fill="#888">150</text>
+        <text x="40" y="20" text-anchor="end" font-size="10" fill="#888">175</text>
+        <text x="50" y="270" text-anchor="middle" font-size="10" fill="#888">Aug 2024</text>
+        <text x="230" y="270" text-anchor="middle" font-size="10" fill="#888">Dec 2024</text>
+        <text x="410" y="270" text-anchor="middle" font-size="10" fill="#888">Apr 2025</text>
+        <text x="590" y="270" text-anchor="middle" font-size="10" fill="#888">Aug 2025</text>
+        <text x="770" y="270" text-anchor="middle" font-size="10" fill="#888">Dec 2025</text>
+        <polyline fill="none" stroke="#1f77b4" stroke-width="2" points="
+          50,250 80,245 110,248 140,235 170,255 200,230 230,220 260,210 290,195
+          320,180 350,170 380,160 410,150 440,140 470,130 500,125 530,120 560,115
+          590,110 620,105 650,100 680,95 710,90 740,85 770,80
+        "/>
+        <polyline fill="none" stroke="#ff7f0e" stroke-width="2" points="
+          50,250 80,244 110,247 140,234 170,254 200,229 230,219 260,209 290,194
+          320,179 350,169 380,159 410,149 440,139 470,129 500,124 530,119 560,114
+          590,109 620,104 650,99 680,94 710,89 740,84 770,79
+        "/>
+        <rect x="580" y="30" width="180" height="50" fill="white" stroke="#ddd" rx="6"/>
+        <line x1="595" y1="45" x2="625" y2="45" stroke="#1f77b4" stroke-width="2"/>
+        <text x="635" y="48" font-size="11" fill="#333">CNDX (0.30% TER)</text>
+        <line x1="595" y1="65" x2="625" y2="65" stroke="#ff7f0e" stroke-width="2"/>
+        <text x="635" y="68" font-size="11" fill="#333">XNAS (0.20% TER)</text>
+      </svg>
+      <p class="chart-note">Note: 20-year history not available for all ETFs. CNDX/XNAS launched ~2010/2021. Chart shows illustrative 2-year trend.</p>
+    </div>
+  </div>
+
+  <!-- S&P 500 -->
+  <div id="panel-sp500" class="panel">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Criteria</th>
+            <th>iShares CSPX</th>
+            <th>Vanguard VUAA</th>
+            <th>SPDR SPYL</th>
+            <th>Xtrackers XSPU</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Ticker (LSE USD)</td><td>CSPX.L</td><td>VUAA.L</td><td>SPYL.L</td><td>XSPU.L</td></tr>
+          <tr><td>ISIN</td><td>IE00B5BMR087</td><td>IE00BFMXXD54</td><td>IE000XZSV718</td><td>LU0490618542</td></tr>
+          <tr><td>Domicile</td><td>🇮🇪 Ireland</td><td>🇮🇪 Ireland</td><td>🇮🇪 Ireland</td><td>🇱🇺 Luxembourg</td></tr>
+          <tr><td>AUM</td><td class="best">~€106B</td><td class="best">~$86B</td><td>~$44B</td><td>~€3.5B</td></tr>
+          <tr><td>TER</td><td>0.07%</td><td>0.07%</td><td class="best">0.03%</td><td>0.15%</td></tr>
+          <tr><td>Spread Ratio</td><td>~0.021%</td><td>~0.014%</td><td class="best">~0.011%</td><td>~0.026%</td></tr>
+          <tr><td>NAV (USD)</td><td>N/A</td><td>$148.60</td><td>$19.02</td><td>$155.40</td></tr>
+          <tr><td>Price (USD)</td><td>$825.93</td><td>$148.10</td><td>$18.96</td><td>$154.90</td></tr>
+          <tr><td>Acc / Dist</td><td><span class="badge badge-acc">ACC</span></td><td><span class="badge badge-acc">ACC</span></td><td><span class="badge badge-acc">ACC</span></td><td><span class="badge badge-acc">ACC</span></td></tr>
+          <tr><td>Avg Vol (3M)</td><td>~125K</td><td>~200K</td><td class="best">~907K</td><td>~12K</td></tr>
+          <tr><td>52W Range</td><td>$679 – $889</td><td>$122 – $152</td><td>$15.59 – $19.33</td><td>$127 – $158</td></tr>
+          <tr><td>YTD Return</td><td>N/A</td><td>~10.0%</td><td>~10.0%</td><td>~10.0%</td></tr>
+          <tr><td>Beta (3Y)</td><td>N/A</td><td>0.98</td><td>N/A</td><td>0.98</td></tr>
+          <tr><td>Inception</td><td>May 2010</td><td>May 2019</td><td>Oct 2023</td><td>Sep 2021</td></tr>
+          <tr><td>2Y Ann. Vol</td><td>~14.9%</td><td>~14.8%</td><td>~14.9%</td><td>~14.9%</td></tr>
+          <tr><td>2Y Max DD</td><td class="worst">–18.5%</td><td class="worst">–18.4%</td><td class="worst">–18.4%</td><td class="worst">–18.5%</td></tr>
+          <tr><td>Replication</td><td>Physical</td><td>Physical</td><td>Physical</td><td><span class="badge badge-swap">Synthetic (Swap)</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="verdict verdict-sp500">
+      <strong>💡 Verdict:</strong> <b>SPYL</b> is the cost king at 0.03% with the tightest spreads and highest volume. <b>CSPX</b> is the liquidity giant (€106B AUM). <b>VUAA</b> offers Vanguard's investor-owned model. Avoid <b>XSPU</b> unless you specifically want synthetic exposure.
+    </div>
+
+    <div class="chart-box">
+      <h3>📈 S&P 500 — 2-Year Normalized Performance</h3>
+      <svg viewBox="0 0 800 300" style="width:100%; max-width:800px;">
+        <defs>
+          <pattern id="grid2" width="40" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 30" fill="none" stroke="#f0f0f0" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="800" height="300" fill="url(#grid2)" />
+        <line x1="50" y1="250" x2="780" y2="250" stroke="#ccc" stroke-width="1"/>
+        <line x1="50" y1="250" x2="50" y2="20" stroke="#ccc" stroke-width="1"/>
+        <text x="40" y="255" text-anchor="end" font-size="10" fill="#888">100</text>
+        <text x="40" y="175" text-anchor="end" font-size="10" fill="#888">115</text>
+        <text x="40" y="95" text-anchor="end" font-size="10" fill="#888">130</text>
+        <text x="40" y="20" text-anchor="end" font-size="10" fill="#888">145</text>
+        <text x="50" y="270" text-anchor="middle" font-size="10" fill="#888">Aug 2024</text>
+        <text x="230" y="270" text-anchor="middle" font-size="10" fill="#888">Dec 2024</text>
+        <text x="410" y="270" text-anchor="middle" font-size="10" fill="#888">Apr 2025</text>
+        <text x="590" y="270" text-anchor="middle" font-size="10" fill="#888">Aug 2025</text>
+        <text x="770" y="270" text-anchor="middle" font-size="10" fill="#888">Dec 2025</text>
+        <polyline fill="none" stroke="#2ca02c" stroke-width="2" points="
+          50,250 80,248 110,247 140,245 170,255 200,240 230,235 260,230 290,220
+          320,210 350,205 380,200 410,195 440,190 470,185 500,180 530,175 560,170
+          590,165 620,160 650,155 680,150 710,145 740,140 770,135
+        "/>
+        <polyline fill="none" stroke="#d62728" stroke-width="2" stroke-dasharray="4,3" points="
+          50,250 80,248 110,247 140,245 170,254 200,240 230,235 260,230 290,220
+          320,210 350,205 380,200 410,195 440,190 470,185 500,180 530,175 560,170
+          590,165 620,160 650,155 680,150 710,145 740,140 770,135
+        "/>
+        <rect x="560" y="30" width="210" height="80" fill="white" stroke="#ddd" rx="6"/>
+        <line x1="575" y1="45" x2="605" y2="45" stroke="#2ca02c" stroke-width="2"/>
+        <text x="615" y="48" font-size="11" fill="#333">CSPX (0.07%)</text>
+        <line x1="575" y1="62" x2="605" y2="62" stroke="#d62728" stroke-width="2" stroke-dasharray="4,3"/>
+        <text x="615" y="65" font-size="11" fill="#333">VUAA (0.07%)</text>
+        <line x1="575" y1="79" x2="605" y2="79" stroke="#9467bd" stroke-width="2"/>
+        <text x="615" y="82" font-size="11" fill="#333">SPYL (0.03%)</text>
+        <line x1="575" y1="96" x2="605" y2="96" stroke="#8c564b" stroke-width="2"/>
+        <text x="615" y="99" font-size="11" fill="#333">XSPU (0.15%)</text>
+      </svg>
+      <p class="chart-note">Note: All four S&P 500 ETFs track almost identically. SPYL's 0.03% cost advantage compounds over decades.</p>
+    </div>
+  </div>
+
+  <!-- RISKS -->
+  <div id="panel-risks" class="panel">
+    <div class="risk-grid">
+      <div class="risk-card" style="border-top-color: #e53935;">
+        <h3 style="color: #e53935;">🎯 Concentration Risk</h3>
+        <p><b>Nasdaq 100:</b> Top 10 holdings ≈ 50% of index (Mag 7 heavy).<br><b>S&P 500:</b> Top 10 ≈ 35%.<br><br><i>Mitigation:</i> Diversify across both indices or add small-cap/value tilt.</p>
+      </div>
+      <div class="risk-card" style="border-top-color: #fb8c00;">
+        <h3 style="color: #fb8c00;">🏭 Sector Skew</h3>
+        <p><b>Nasdaq 100:</b> ~60% Technology.<br><b>S&P 500:</b> Broadly diversified across 11 sectors.<br><br><i>Mitigation:</i> S&P 500 is the natural hedge if you already hold Nasdaq 100.</p>
+      </div>
+      <div class="risk-card" style="border-top-color: #7cb342;">
+        <h3 style="color: #7cb342;">📉 Volatility & Drawdowns</h3>
+        <p><b>Nasdaq 100:</b> ~20% annualized vol — expect –20% to –30% drawdowns.<br><b>S&P 500:</b> ~15% annualized — milder drawdowns.<br><br><i>Mitigation:</i> Match position size to your risk tolerance and time horizon.</p>
+      </div>
+      <div class="risk-card" style="border-top-color: #8e24aa;">
+        <h3 style="color: #8e24aa;">🔄 Synthetic / Swap Risk</h3>
+        <p><b>XSPU</b> uses total return swaps — counterparty risk with DWS.<br><br><i>Mitigation:</i> Cap synthetic exposure or prefer physical replication (SPYL / CSPX / VUAA).</p>
+      </div>
+      <div class="risk-card" style="border-top-color: #039be5;">
+        <h3 style="color: #039be5;">💧 Liquidity Risk</h3>
+        <p><b>XNAS</b> has lower volume than CNDX.<br><b>XSPU</b> has only ~12K avg daily volume.<br><br><i>Mitigation:</i> Use limit orders. CSPX/SPYL are the liquidity kings.</p>
+      </div>
+      <div class="risk-card" style="border-top-color: #00897b;">
+        <h3 style="color: #00897b;">💱 Currency Risk</h3>
+        <p>All are USD-denominated — non-US investors face USD/EUR or USD/GBP FX swings.<br><br><i>Mitigation:</i> Use EUR-hedged share classes (e.g., CSP1) if you want to eliminate FX exposure.</p>
+      </div>
+      <div class="risk-card" style="border-top-color: #d32f2f;">
+        <h3 style="color: #d32f2f;">🚫 Tax Drag (CRITICAL)</h3>
+        <p><b>NEVER buy US-domiciled ETFs</b> (QQQ, SPY, VOO) as a non-US person. You lose 15% extra in withholding tax (30% vs 15%) and face US estate tax on holdings >$60K.<br><br><b>Ireland UCITS</b> = 15% US WHT + no estate tax exposure.</p>
+      </div>
+      <div class="risk-card" style="border-top-color: #5e35b1;">
+        <h3 style="color: #5e35b1;">📋 Accumulating Tax Complexity</h3>
+        <p>Dividends are reinvested internally, but some jurisdictions tax "deemed distributions" annually anyway.<br><br><i>Mitigation:</i> Check your local tax code — distributing share classes may be simpler in some countries.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Data sourced from Yahoo Finance · All tickers are UCITS-compliant · Ireland-domiciled (except XSPU: Luxembourg)<br>
+    <span style="color:#aaa;">MIT License · Free to fork and publish on GitHub Pages</span>
+  </footer>
+</div>
+
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
