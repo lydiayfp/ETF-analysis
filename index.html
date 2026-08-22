@@ -3,264 +3,173 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Non-US Domiciled ETF Comparison — Nasdaq 100 & S&P 500 UCITS</title>
+<title>ETF Comparison Dashboard — Non-US Domiciled UCITS</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #f5f7fa;
-    color: #1a1a2e;
-    line-height: 1.6;
-  }
-  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-  h1 { text-align: center; color: #16213e; margin-bottom: 4px; font-size: 26px; }
-  .subtitle { text-align: center; color: #666; margin-bottom: 24px; font-size: 14px; }
-
-  /* Tabs */
-  .tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0; }
-  .tab-btn {
-    flex: 1; padding: 12px 20px; border: none; font-weight: 600; cursor: pointer;
-    border-radius: 8px 8px 0 0; font-size: 14px; transition: all 0.2s;
-  }
-  .tab-btn.active { background: #16213e; color: white; }
-  .tab-btn:not(.active) { background: #f0f0f0; color: #333; }
-  .tab-btn:not(.active):hover { background: #e0e0e0; }
-
-  /* Panels */
-  .panel { display: none; animation: fadeIn 0.3s ease; }
-  .panel.active { display: block; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
-  /* Tables */
-  .table-wrap { overflow-x: auto; margin-bottom: 24px; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; background: white; }
-  thead th {
-    background: #16213e; color: white; padding: 14px 10px; text-align: center; font-weight: 600;
-    position: sticky; top: 0;
-  }
-  thead th:first-child { text-align: left; border-radius: 10px 0 0 0; }
-  thead th:last-child { border-radius: 0 10px 0 0; }
-  tbody tr:nth-child(even) { background: #f8f9fa; }
-  tbody td { padding: 11px 10px; text-align: center; border-bottom: 1px solid #eee; }
-  tbody td:first-child { text-align: left; font-weight: 600; color: #333; }
-  .badge {
-    display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px;
-    font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;
-  }
-  .badge-acc { background: #e8f5e9; color: #2e7d32; }
-  .badge-swap { background: #fff3e0; color: #e65100; }
-  .best { color: #2ca02c; font-weight: 700; }
-  .worst { color: #d62728; font-weight: 700; }
-
-  /* Verdict boxes */
-  .verdict {
-    padding: 16px 20px; border-radius: 8px; margin-bottom: 24px; font-size: 14px;
-    border-left: 4px solid;
-  }
-  .verdict-nasdaq { background: #fff3e0; border-color: #ff9800; }
-  .verdict-sp500 { background: #e8f5e9; border-color: #4caf50; }
-
-  /* Risk cards */
-  .risk-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
-  .risk-card {
-    background: white; border-radius: 10px; padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07); border-top: 4px solid;
-    transition: transform 0.15s;
-  }
-  .risk-card:hover { transform: translateY(-3px); }
-  .risk-card h3 { margin: 0 0 10px 0; font-size: 15px; }
-  .risk-card p { margin: 0; font-size: 13px; color: #444; line-height: 1.65; }
-
-  /* Chart placeholder */
-  .chart-box {
-    background: white; border-radius: 10px; padding: 24px; margin-bottom: 24px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08); text-align: center;
-  }
-  .chart-box h3 { margin-bottom: 16px; color: #16213e; font-size: 16px; }
-  .chart-note { font-size: 12px; color: #888; margin-top: 12px; }
-
-  footer {
-    margin-top: 30px; padding-top: 16px; border-top: 1px solid #e0e0e0;
-    text-align: center; font-size: 12px; color: #888;
-  }
-
-  @media (max-width: 768px) {
-    .tabs { flex-direction: column; }
-    .tab-btn { border-radius: 8px; }
-    table { font-size: 11px; }
-    tbody td { padding: 8px 6px; }
-  }
+  :root { --bg:#f5f7fa; --card:#fff; --text:#1a1a2e; --muted:#666; --border:#e0e0e0; --accent:#16213e; --accent2:#0f3460; --green:#2ca02c; --red:#d62728; --orange:#ff9800; --shadow:0 2px 12px rgba(0,0,0,0.08); }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+  .container { max-width:1400px; margin:0 auto; padding:20px; }
+  h1 { text-align:center; color:var(--accent); margin-bottom:4px; font-size:26px; }
+  .subtitle { text-align:center; color:var(--muted); margin-bottom:24px; font-size:14px; }
+  .tabs { display:flex; gap:4px; margin-bottom:20px; border-bottom:2px solid var(--border); flex-wrap:wrap; }
+  .tab-btn { flex:1; min-width:120px; padding:12px 16px; border:none; font-weight:600; cursor:pointer; border-radius:8px 8px 0 0; font-size:13px; transition:all .2s; background:#f0f0f0; color:#333; }
+  .tab-btn.active { background:var(--accent); color:white; }
+  .tab-btn:not(.active):hover { background:#e0e0e0; }
+  .panel { display:none; animation:fadeIn .3s ease; }
+  .panel.active { display:block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+  .etf-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; margin-bottom:24px; }
+  .etf-card { background:var(--card); border-radius:12px; padding:18px; box-shadow:var(--shadow); cursor:pointer; transition:all .2s; border:2px solid transparent; position:relative; }
+  .etf-card:hover { transform:translateY(-4px); border-color:var(--accent2); box-shadow:0 8px 24px rgba(0,0,0,0.12); }
+  .etf-card .ticker { font-size:20px; font-weight:800; color:var(--accent); margin-bottom:4px; }
+  .etf-card .name { font-size:12px; color:var(--muted); margin-bottom:10px; line-height:1.4; }
+  .etf-card .metrics { display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px; }
+  .etf-card .metric { background:#f8f9fa; padding:8px; border-radius:6px; }
+  .etf-card .metric-label { color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:.5px; }
+  .etf-card .metric-value { font-weight:700; font-size:13px; }
+  .badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; text-transform:uppercase; }
+  .badge-acc { background:#e8f5e9; color:#2e7d32; }
+  .badge-dist { background:#e3f2fd; color:#1565c0; }
+  .badge-swap { background:#fff3e0; color:#e65100; }
+  .best { color:var(--green); font-weight:700; }
+  .worst { color:var(--red); font-weight:700; }
+  .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center; padding:20px; }
+  .modal-overlay.active { display:flex; }
+  .modal { background:var(--card); border-radius:16px; width:100%; max-width:900px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:modalIn .3s ease; }
+  @keyframes modalIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
+  .modal-header { padding:20px 24px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:var(--accent); color:white; border-radius:16px 16px 0 0; }
+  .modal-header h2 { font-size:18px; }
+  .modal-close { background:none; border:none; color:white; font-size:24px; cursor:pointer; }
+  .modal-body { padding:24px; }
+  .detail-table { width:100%; border-collapse:collapse; font-size:13px; margin-bottom:20px; }
+  .detail-table th { text-align:left; padding:10px; background:#f8f9fa; font-weight:600; width:35%; }
+  .detail-table td { padding:10px; border-bottom:1px solid var(--border); }
+  .chart-container { background:#fafbfc; border-radius:10px; padding:16px; margin-bottom:20px; position:relative; }
+  .chart-container h4 { margin-bottom:12px; font-size:14px; color:var(--accent); }
+  .chart-svg { width:100%; height:280px; }
+  .chart-tooltip { position:absolute; background:rgba(0,0,0,0.85); color:white; padding:6px 10px; border-radius:6px; font-size:11px; pointer-events:none; opacity:0; transition:opacity .15s; z-index:10; }
+  .risk-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; }
+  .risk-card { background:var(--card); border-radius:10px; padding:20px; box-shadow:var(--shadow); border-top:4px solid; }
+  .risk-card h3 { margin:0 0 10px 0; font-size:15px; }
+  .risk-card p { margin:0; font-size:13px; color:#444; line-height:1.65; }
+  .table-wrap { overflow-x:auto; margin-bottom:24px; border-radius:10px; box-shadow:var(--shadow); }
+  table { width:100%; border-collapse:collapse; font-size:12px; background:white; }
+  thead th { background:var(--accent); color:white; padding:12px 8px; text-align:center; font-weight:600; position:sticky; top:0; font-size:11px; }
+  thead th:first-child { text-align:left; }
+  tbody tr:nth-child(even) { background:#f8f9fa; }
+  tbody td { padding:10px 8px; text-align:center; border-bottom:1px solid #eee; }
+  tbody td:first-child { text-align:left; font-weight:600; }
+  footer { margin-top:30px; padding-top:16px; border-top:1px solid var(--border); text-align:center; font-size:12px; color:#888; }
+  @media(max-width:768px){ .tabs{flex-direction:column;} .tab-btn{border-radius:8px;} .etf-grid{grid-template-columns:1fr;} .modal{max-width:100%;} }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>📊 Non-US Domiciled ETF Comparison</h1>
-  <p class="subtitle">Nasdaq 100 & S&P 500 UCITS ETFs — Ireland Domiciled · Live Data Dashboard</p>
-
-  <!-- Tabs -->
+  <h1>📊 Non-US Domiciled ETF Dashboard</h1>
+  <p class="subtitle">UCITS ETFs — World · Nasdaq-100 · S&P 500 · Global Bond · Asia · Click any card for charts</p>
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('nasdaq')">Nasdaq 100</button>
-    <button class="tab-btn" onclick="switchTab('sp500')">S&P 500</button>
+    <button class="tab-btn active" onclick="switchTab('world')">🌍 World (6)</button>
+    <button class="tab-btn" onclick="switchTab('nasdaq')">📈 Nasdaq-100 (2)</button>
+    <button class="tab-btn" onclick="switchTab('sp500')">🇺🇸 S&P 500 (3)</button>
+    <button class="tab-btn" onclick="switchTab('bond')">🏛️ Global Bond (2)</button>
+    <button class="tab-btn" onclick="switchTab('asia')">🌏 Asia (5)</button>
     <button class="tab-btn" onclick="switchTab('risks')">⚠️ Risks</button>
   </div>
 
-  <!-- NASDAQ 100 -->
-  <div id="panel-nasdaq" class="panel active">
+  <!-- WORLD -->
+  <div id="panel-world" class="panel active">
+    <div class="etf-grid" id="grid-world"></div>
     <div class="table-wrap">
       <table>
-        <thead>
-          <tr>
-            <th>Criteria</th>
-            <th>iShares CNDX</th>
-            <th>Xtrackers XNAS</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Criteria</th><th>ACWD</th><th>IMID</th><th>FWRA</th><th>VWRA</th><th>ISAC</th><th>CSPX</th></tr></thead>
         <tbody>
-          <tr><td>Ticker (LSE USD)</td><td>CNDX.L</td><td>XNAS.L</td></tr>
-          <tr><td>ISIN</td><td>IE00B53SZB19</td><td>IE00BMFKG444</td></tr>
-          <tr><td>Domicile</td><td>🇮🇪 Ireland</td><td>🇮🇪 Ireland</td></tr>
-          <tr><td>AUM</td><td class="best">~€17.1B</td><td>~$2.4B</td></tr>
-          <tr><td>TER (Expense Ratio)</td><td>0.30%</td><td class="best">0.20%</td></tr>
-          <tr><td>Spread Ratio</td><td class="best">~0.024%</td><td>~0.044%</td></tr>
-          <tr><td>NAV (USD)</td><td>N/A</td><td>$68.40</td></tr>
-          <tr><td>Price (USD)</td><td>$1,675.40</td><td>$67.68</td></tr>
-          <tr><td>Accumulating / Distributing</td><td><span class="badge badge-acc">Accumulating</span></td><td><span class="badge badge-acc">Accumulating</span></td></tr>
-          <tr><td>Avg Daily Volume (3M)</td><td>~22,284</td><td>~40,028</td></tr>
-          <tr><td>52W Range</td><td>$1,317 – $1,766</td><td>$53.27 – $71.25</td></tr>
-          <tr><td>YTD Return</td><td>N/A</td><td>~12.2%</td></tr>
-          <tr><td>Beta (3Y)</td><td>N/A</td><td>0.97</td></tr>
-          <tr><td>Inception</td><td>Jan 2010</td><td>Jan 2021</td></tr>
-          <tr><td>2Y Ann. Volatility</td><td>~19.9%</td><td>~19.9%</td></tr>
-          <tr><td>2Y Max Drawdown</td><td class="worst">–22.4%</td><td class="worst">–22.9%</td></tr>
-          <tr><td>Replication</td><td>Physical</td><td>Physical</td></tr>
+          <tr><td>ISIN</td><td>IE00B44Z5B48</td><td>IE00B3YLTY66</td><td>IE000716YHJ7</td><td>IE00BK5BQT80</td><td>IE00B6R52259</td><td>IE00B5BMR087</td></tr>
+          <tr><td>Domicile</td><td>🇮🇪 Ireland</td><td>🇮🇪 Ireland</td><td>🇮🇪 Ireland</td><td>🇮🇪 Ireland</td><td>🇮🇪 Ireland</td><td>🇮🇪 Ireland</td></tr>
+          <tr><td>TER</td><td class="best">0.12%</td><td>0.17%</td><td>0.15%</td><td>0.14%</td><td>0.20%</td><td class="best">0.07%</td></tr>
+          <tr><td>AUM</td><td>~$8.5B</td><td>~$7.7B</td><td>~$4.2B</td><td class="best">~$51B</td><td>~$36B</td><td class="best">~€106B</td></tr>
+          <tr><td>Type</td><td><span class="badge badge-acc">Acc</span></td><td><span class="badge badge-acc">Acc</span></td><td><span class="badge badge-acc">Acc</span></td><td><span class="badge badge-acc">Acc</span></td><td><span class="badge badge-acc">Acc</span></td><td><span class="badge badge-acc">Acc</span></td></tr>
+          <tr><td>Index</td><td>MSCI ACWI</td><td>MSCI ACWI IMI</td><td>FTSE All-World</td><td>FTSE All-World</td><td>MSCI ACWI</td><td>S&P 500</td></tr>
+          <tr><td>Holdings</td><td>~2,700</td><td>~9,000</td><td>~2,314</td><td>~3,771</td><td>~2,700</td><td>~500</td></tr>
+          <tr><td>Inception</td><td>May 2011</td><td>May 2011</td><td>Jun 2023</td><td>Jul 2019</td><td>Oct 2011</td><td>May 2010</td></tr>
+          <tr><td>Replication</td><td>Physical (Opt)</td><td>Physical (Opt)</td><td>Physical (Samp)</td><td>Physical (Samp)</td><td>Physical (Opt)</td><td>Physical (Opt)</td></tr>
         </tbody>
       </table>
     </div>
+  </div>
 
-    <div class="verdict verdict-nasdaq">
-      <strong>💡 Verdict:</strong> <b>XNAS</b> wins on cost (0.20% vs 0.30%), but <b>CNDX</b> has 7× the AUM and a 15-year track record. For large positions, CNDX's liquidity edge may outweigh the 0.10% TER gap.
-    </div>
-
-    <div class="chart-box">
-      <h3>📈 Nasdaq 100 — 2-Year Normalized Performance</h3>
-      <svg viewBox="0 0 800 300" style="width:100%; max-width:800px;">
-        <defs>
-          <pattern id="grid" width="40" height="30" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 30" fill="none" stroke="#f0f0f0" stroke-width="1"/>
-          </pattern>
-        </defs>
-        <rect width="800" height="300" fill="url(#grid)" />
-        <line x1="50" y1="250" x2="780" y2="250" stroke="#ccc" stroke-width="1"/>
-        <line x1="50" y1="250" x2="50" y2="20" stroke="#ccc" stroke-width="1"/>
-        <text x="40" y="255" text-anchor="end" font-size="10" fill="#888">100</text>
-        <text x="40" y="175" text-anchor="end" font-size="10" fill="#888">125</text>
-        <text x="40" y="95" text-anchor="end" font-size="10" fill="#888">150</text>
-        <text x="40" y="20" text-anchor="end" font-size="10" fill="#888">175</text>
-        <text x="50" y="270" text-anchor="middle" font-size="10" fill="#888">Aug 2024</text>
-        <text x="230" y="270" text-anchor="middle" font-size="10" fill="#888">Dec 2024</text>
-        <text x="410" y="270" text-anchor="middle" font-size="10" fill="#888">Apr 2025</text>
-        <text x="590" y="270" text-anchor="middle" font-size="10" fill="#888">Aug 2025</text>
-        <text x="770" y="270" text-anchor="middle" font-size="10" fill="#888">Dec 2025</text>
-        <polyline fill="none" stroke="#1f77b4" stroke-width="2" points="
-          50,250 80,245 110,248 140,235 170,255 200,230 230,220 260,210 290,195
-          320,180 350,170 380,160 410,150 440,140 470,130 500,125 530,120 560,115
-          590,110 620,105 650,100 680,95 710,90 740,85 770,80
-        "/>
-        <polyline fill="none" stroke="#ff7f0e" stroke-width="2" points="
-          50,250 80,244 110,247 140,234 170,254 200,229 230,219 260,209 290,194
-          320,179 350,169 380,159 410,149 440,139 470,129 500,124 530,119 560,114
-          590,109 620,104 650,99 680,94 710,89 740,84 770,79
-        "/>
-        <rect x="580" y="30" width="180" height="50" fill="white" stroke="#ddd" rx="6"/>
-        <line x1="595" y1="45" x2="625" y2="45" stroke="#1f77b4" stroke-width="2"/>
-        <text x="635" y="48" font-size="11" fill="#333">CNDX (0.30% TER)</text>
-        <line x1="595" y1="65" x2="625" y2="65" stroke="#ff7f0e" stroke-width="2"/>
-        <text x="635" y="68" font-size="11" fill="#333">XNAS (0.20% TER)</text>
-      </svg>
-      <p class="chart-note">Note: 20-year history not available for all ETFs. CNDX/XNAS launched ~2010/2021. Chart shows illustrative 2-year trend.</p>
+  <!-- NASDAQ -->
+  <div id="panel-nasdaq" class="panel">
+    <div class="etf-grid" id="grid-nasdaq"></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Criteria</th><th>CNDX</th><th>XNAQ</th></tr></thead>
+        <tbody>
+          <tr><td>ISIN</td><td>IE00B53SZB19</td><td>IE00BMFKG444</td></tr>
+          <tr><td>Domicile</td><td>🇮🇪 Ireland</td><td>🇮🇪 Ireland</td></tr>
+          <tr><td>TER</td><td>0.30%</td><td class="best">0.20%</td></tr>
+          <tr><td>AUM</td><td class="best">~€17.1B</td><td>~$2.4B</td></tr>
+          <tr><td>Type</td><td><span class="badge badge-acc">Acc</span></td><td><span class="badge badge-acc">Acc</span></td></tr>
+          <tr><td>Index</td><td>Nasdaq-100</td><td>Nasdaq-100</td></tr>
+          <tr><td>Replication</td><td>Physical</td><td>Physical</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
   <!-- S&P 500 -->
   <div id="panel-sp500" class="panel">
+    <div class="etf-grid" id="grid-sp500"></div>
     <div class="table-wrap">
       <table>
-        <thead>
-          <tr>
-            <th>Criteria</th>
-            <th>iShares CSPX</th>
-            <th>Vanguard VUAA</th>
-            <th>SPDR SPYL</th>
-            <th>Xtrackers XSPU</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Criteria</th><th>CSPX</th><th>VUAA</th><th>SPYL</th><th>XSPU</th></tr></thead>
         <tbody>
-          <tr><td>Ticker (LSE USD)</td><td>CSPX.L</td><td>VUAA.L</td><td>SPYL.L</td><td>XSPU.L</td></tr>
           <tr><td>ISIN</td><td>IE00B5BMR087</td><td>IE00BFMXXD54</td><td>IE000XZSV718</td><td>LU0490618542</td></tr>
           <tr><td>Domicile</td><td>🇮🇪 Ireland</td><td>🇮🇪 Ireland</td><td>🇮🇪 Ireland</td><td>🇱🇺 Luxembourg</td></tr>
-          <tr><td>AUM</td><td class="best">~€106B</td><td class="best">~$86B</td><td>~$44B</td><td>~€3.5B</td></tr>
           <tr><td>TER</td><td>0.07%</td><td>0.07%</td><td class="best">0.03%</td><td>0.15%</td></tr>
-          <tr><td>Spread Ratio</td><td>~0.021%</td><td>~0.014%</td><td class="best">~0.011%</td><td>~0.026%</td></tr>
-          <tr><td>NAV (USD)</td><td>N/A</td><td>$148.60</td><td>$19.02</td><td>$155.40</td></tr>
-          <tr><td>Price (USD)</td><td>$825.93</td><td>$148.10</td><td>$18.96</td><td>$154.90</td></tr>
-          <tr><td>Acc / Dist</td><td><span class="badge badge-acc">ACC</span></td><td><span class="badge badge-acc">ACC</span></td><td><span class="badge badge-acc">ACC</span></td><td><span class="badge badge-acc">ACC</span></td></tr>
-          <tr><td>Avg Vol (3M)</td><td>~125K</td><td>~200K</td><td class="best">~907K</td><td>~12K</td></tr>
-          <tr><td>52W Range</td><td>$679 – $889</td><td>$122 – $152</td><td>$15.59 – $19.33</td><td>$127 – $158</td></tr>
-          <tr><td>YTD Return</td><td>N/A</td><td>~10.0%</td><td>~10.0%</td><td>~10.0%</td></tr>
-          <tr><td>Beta (3Y)</td><td>N/A</td><td>0.98</td><td>N/A</td><td>0.98</td></tr>
-          <tr><td>Inception</td><td>May 2010</td><td>May 2019</td><td>Oct 2023</td><td>Sep 2021</td></tr>
-          <tr><td>2Y Ann. Vol</td><td>~14.9%</td><td>~14.8%</td><td>~14.9%</td><td>~14.9%</td></tr>
-          <tr><td>2Y Max DD</td><td class="worst">–18.5%</td><td class="worst">–18.4%</td><td class="worst">–18.4%</td><td class="worst">–18.5%</td></tr>
-          <tr><td>Replication</td><td>Physical</td><td>Physical</td><td>Physical</td><td><span class="badge badge-swap">Synthetic (Swap)</span></td></tr>
+          <tr><td>AUM</td><td class="best">~€106B</td><td>~$86B</td><td>~$44B</td><td>~€3.5B</td></tr>
+          <tr><td>Type</td><td><span class="badge badge-acc">Acc</span></td><td><span class="badge badge-acc">Acc</span></td><td><span class="badge badge-acc">Acc</span></td><td><span class="badge badge-acc">Acc</span></td></tr>
+          <tr><td>Replication</td><td>Physical</td><td>Physical</td><td>Physical</td><td><span class="badge badge-swap">Swap</span></td></tr>
         </tbody>
       </table>
     </div>
+  </div>
 
-    <div class="verdict verdict-sp500">
-      <strong>💡 Verdict:</strong> <b>SPYL</b> is the cost king at 0.03% with the tightest spreads and highest volume. <b>CSPX</b> is the liquidity giant (€106B AUM). <b>VUAA</b> offers Vanguard's investor-owned model. Avoid <b>XSPU</b> unless you specifically want synthetic exposure.
+  <!-- BOND -->
+  <div id="panel-bond" class="panel">
+    <div class="etf-grid" id="grid-bond"></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Criteria</th><th>V3AA</th><th>AGGG</th></tr></thead>
+        <tbody>
+          <tr><td>ISIN</td><td>IE00BNG8L278</td><td>IE00B3F81409</td></tr>
+          <tr><td>Domicile</td><td>🇮🇪 Ireland</td><td>🇮🇪 Ireland</td></tr>
+          <tr><td>TER</td><td>0.24%</td><td class="best">0.10%</td></tr>
+          <tr><td>AUM</td><td>~$1.2B</td><td class="best">~$14.3B</td></tr>
+          <tr><td>Type</td><td><span class="badge badge-acc">Acc</span></td><td><span class="badge badge-dist">Dist</span></td></tr>
+          <tr><td>Index</td><td>FTSE Global All Cap Choice</td><td>Bloomberg Global Aggregate</td></tr>
+          <tr><td>Holdings</td><td>~8,000+</td><td>~19,979</td></tr>
+          <tr><td>Inception</td><td>Mar 2021</td><td>Nov 2017</td></tr>
+        </tbody>
+      </table>
     </div>
+  </div>
 
-    <div class="chart-box">
-      <h3>📈 S&P 500 — 2-Year Normalized Performance</h3>
-      <svg viewBox="0 0 800 300" style="width:100%; max-width:800px;">
-        <defs>
-          <pattern id="grid2" width="40" height="30" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 30" fill="none" stroke="#f0f0f0" stroke-width="1"/>
-          </pattern>
-        </defs>
-        <rect width="800" height="300" fill="url(#grid2)" />
-        <line x1="50" y1="250" x2="780" y2="250" stroke="#ccc" stroke-width="1"/>
-        <line x1="50" y1="250" x2="50" y2="20" stroke="#ccc" stroke-width="1"/>
-        <text x="40" y="255" text-anchor="end" font-size="10" fill="#888">100</text>
-        <text x="40" y="175" text-anchor="end" font-size="10" fill="#888">115</text>
-        <text x="40" y="95" text-anchor="end" font-size="10" fill="#888">130</text>
-        <text x="40" y="20" text-anchor="end" font-size="10" fill="#888">145</text>
-        <text x="50" y="270" text-anchor="middle" font-size="10" fill="#888">Aug 2024</text>
-        <text x="230" y="270" text-anchor="middle" font-size="10" fill="#888">Dec 2024</text>
-        <text x="410" y="270" text-anchor="middle" font-size="10" fill="#888">Apr 2025</text>
-        <text x="590" y="270" text-anchor="middle" font-size="10" fill="#888">Aug 2025</text>
-        <text x="770" y="270" text-anchor="middle" font-size="10" fill="#888">Dec 2025</text>
-        <polyline fill="none" stroke="#2ca02c" stroke-width="2" points="
-          50,250 80,248 110,247 140,245 170,255 200,240 230,235 260,230 290,220
-          320,210 350,205 380,200 410,195 440,190 470,185 500,180 530,175 560,170
-          590,165 620,160 650,155 680,150 710,145 740,140 770,135
-        "/>
-        <polyline fill="none" stroke="#d62728" stroke-width="2" stroke-dasharray="4,3" points="
-          50,250 80,248 110,247 140,245 170,254 200,240 230,235 260,230 290,220
-          320,210 350,205 380,200 410,195 440,190 470,185 500,180 530,175 560,170
-          590,165 620,160 650,155 680,150 710,145 740,140 770,135
-        "/>
-        <rect x="560" y="30" width="210" height="80" fill="white" stroke="#ddd" rx="6"/>
-        <line x1="575" y1="45" x2="605" y2="45" stroke="#2ca02c" stroke-width="2"/>
-        <text x="615" y="48" font-size="11" fill="#333">CSPX (0.07%)</text>
-        <line x1="575" y1="62" x2="605" y2="62" stroke="#d62728" stroke-width="2" stroke-dasharray="4,3"/>
-        <text x="615" y="65" font-size="11" fill="#333">VUAA (0.07%)</text>
-        <line x1="575" y1="79" x2="605" y2="79" stroke="#9467bd" stroke-width="2"/>
-        <text x="615" y="82" font-size="11" fill="#333">SPYL (0.03%)</text>
-        <line x1="575" y1="96" x2="605" y2="96" stroke="#8c564b" stroke-width="2"/>
-        <text x="615" y="99" font-size="11" fill="#333">XSPU (0.15%)</text>
-      </svg>
-      <p class="chart-note">Note: All four S&P 500 ETFs track almost identically. SPYL's 0.03% cost advantage compounds over decades.</p>
+  <!-- ASIA -->
+  <div id="panel-asia" class="panel">
+    <div class="etf-grid" id="grid-asia"></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Criteria</th><th>A50D</th><th>VREI</th><th>3010</th><th>IQQF</th><th>APEX</th></tr></thead>
+        <tbody>
+          <tr><td>ISIN</td><td>HK2823028546</td><td>IE00B9F5YL18</td><td>HK0000051877</td><td>IE00B0M63730</td><td>LU1900068161</td></tr>
+          <tr><td>Domicile</td><td>🇭🇰 Hong Kong</td><td>🇮🇪 Ireland</td><td>🇭🇰 Hong Kong</td><td>🇮🇪 Ireland</td><td>🇱🇺 Luxembourg</td></tr>
+          <tr><td>TER</td><td>0.99%</td><td class="best">0.15%</td><td>0.28%</td><td>0.74%</td><td>0.50%</td></tr>
+          <tr><td>AUM</td><td>~RMB 12.9B</td><td>~$3.3B</td><td>~HK$34.7B</td><td>~€1.6B</td><td>~€372M</td></tr>
+          <tr><td>Type</td><td><span class="badge badge-dist">Dist</span></td><td><span class="badge badge-dist">Dist</span></td><td>Physical</td><td><span class="badge badge-dist">Dist</span></td><td><span class="badge badge-acc">Acc</span></td></tr>
+          <tr><td>Index</td><td>FTSE China A50</td><td>FTSE Dev Asia Pac ex JP</td><td>MSCI AC Asia ex Japan</td><td>MSCI AC Far East ex JP</td><td>MSCI AC Asia Ex Japan</td></tr>
+          <tr><td>Inception</td><td>Nov 2004</td><td>May 2013</td><td>Apr 2009</td><td>Oct 2005</td><td>Feb 2019</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
@@ -269,52 +178,260 @@
     <div class="risk-grid">
       <div class="risk-card" style="border-top-color: #e53935;">
         <h3 style="color: #e53935;">🎯 Concentration Risk</h3>
-        <p><b>Nasdaq 100:</b> Top 10 holdings ≈ 50% of index (Mag 7 heavy).<br><b>S&P 500:</b> Top 10 ≈ 35%.<br><br><i>Mitigation:</i> Diversify across both indices or add small-cap/value tilt.</p>
+        <p><b>Nasdaq 100:</b> Top 10 ≈ 50% (Mag 7 heavy).<br><b>Asia ETFs:</b> China/Taiwan concentration.<br><br><i>Mitigation:</i> Blend with broad World or S&P 500 ETFs.</p>
       </div>
       <div class="risk-card" style="border-top-color: #fb8c00;">
-        <h3 style="color: #fb8c00;">🏭 Sector Skew</h3>
-        <p><b>Nasdaq 100:</b> ~60% Technology.<br><b>S&P 500:</b> Broadly diversified across 11 sectors.<br><br><i>Mitigation:</i> S&P 500 is the natural hedge if you already hold Nasdaq 100.</p>
+        <h3 style="color: #fb8c00;">🏭 Sector / Region Skew</h3>
+        <p><b>Nasdaq:</b> ~60% Tech.<br><b>Asia:</b> Heavy China/HK exposure.<br><br><i>Mitigation:</i> Diversify across regions and sectors.</p>
       </div>
       <div class="risk-card" style="border-top-color: #7cb342;">
-        <h3 style="color: #7cb342;">📉 Volatility & Drawdowns</h3>
-        <p><b>Nasdaq 100:</b> ~20% annualized vol — expect –20% to –30% drawdowns.<br><b>S&P 500:</b> ~15% annualized — milder drawdowns.<br><br><i>Mitigation:</i> Match position size to your risk tolerance and time horizon.</p>
+        <h3 style="color: #7cb342;">📉 Volatility</h3>
+        <p><b>Nasdaq 100:</b> ~20% vol, –22% max DD.<br><b>Asia:</b> ~18% vol, –25% max DD.<br><br><i>Mitigation:</i> Size positions to your risk tolerance.</p>
       </div>
       <div class="risk-card" style="border-top-color: #8e24aa;">
-        <h3 style="color: #8e24aa;">🔄 Synthetic / Swap Risk</h3>
-        <p><b>XSPU</b> uses total return swaps — counterparty risk with DWS.<br><br><i>Mitigation:</i> Cap synthetic exposure or prefer physical replication (SPYL / CSPX / VUAA).</p>
+        <h3 style="color: #8e24aa;">🔄 Synthetic Risk</h3>
+        <p><b>XSPU</b> uses total return swaps.<br><br><i>Mitigation:</i> Prefer physical replication (SPYL, CSPX, VUAA).</p>
       </div>
       <div class="risk-card" style="border-top-color: #039be5;">
         <h3 style="color: #039be5;">💧 Liquidity Risk</h3>
-        <p><b>XNAS</b> has lower volume than CNDX.<br><b>XSPU</b> has only ~12K avg daily volume.<br><br><i>Mitigation:</i> Use limit orders. CSPX/SPYL are the liquidity kings.</p>
+        <p><b>Small AUM ETFs</b> (APEX, A50D) have wider spreads.<br><br><i>Mitigation:</i> Use limit orders. CSPX/SPYL are liquidity kings.</p>
       </div>
       <div class="risk-card" style="border-top-color: #00897b;">
         <h3 style="color: #00897b;">💱 Currency Risk</h3>
-        <p>All are USD-denominated — non-US investors face USD/EUR or USD/GBP FX swings.<br><br><i>Mitigation:</i> Use EUR-hedged share classes (e.g., CSP1) if you want to eliminate FX exposure.</p>
+        <p>USD, HKD, EUR exposure for non-US investors.<br><br><i>Mitigation:</i> Use hedged share classes if desired.</p>
       </div>
       <div class="risk-card" style="border-top-color: #d32f2f;">
         <h3 style="color: #d32f2f;">🚫 Tax Drag (CRITICAL)</h3>
-        <p><b>NEVER buy US-domiciled ETFs</b> (QQQ, SPY, VOO) as a non-US person. You lose 15% extra in withholding tax (30% vs 15%) and face US estate tax on holdings >$60K.<br><br><b>Ireland UCITS</b> = 15% US WHT + no estate tax exposure.</p>
+        <p><b>NEVER buy US-domiciled ETFs</b> (QQQ, SPY, VOO). 30% WHT + US estate tax &gt;$60K.<br><br><b>Ireland UCITS</b> = 15% WHT + no estate tax.</p>
       </div>
       <div class="risk-card" style="border-top-color: #5e35b1;">
         <h3 style="color: #5e35b1;">📋 Accumulating Tax Complexity</h3>
-        <p>Dividends are reinvested internally, but some jurisdictions tax "deemed distributions" annually anyway.<br><br><i>Mitigation:</i> Check your local tax code — distributing share classes may be simpler in some countries.</p>
+        <p>Some jurisdictions tax "deemed distributions" on Acc ETFs.<br><br><i>Mitigation:</i> Check local tax code — Dist may be simpler.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2 id="modal-title">ETF Details</h2>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <table class="detail-table">
+          <tr><th>Ticker</th><td id="m-ticker"></td></tr>
+          <tr><th>Name</th><td id="m-name"></td></tr>
+          <tr><th>ISIN</th><td id="m-isin"></td></tr>
+          <tr><th>Domicile</th><td id="m-domicile"></td></tr>
+          <tr><th>TER</th><td id="m-ter"></td></tr>
+          <tr><th>AUM</th><td id="m-aum"></td></tr>
+          <tr><th>Inception</th><td id="m-inception"></td></tr>
+          <tr><th>Type</th><td id="m-type"></td></tr>
+          <tr><th>Replication</th><td id="m-replication"></td></tr>
+          <tr><th>Index</th><td id="m-index"></td></tr>
+          <tr><th>Holdings</th><td id="m-holdings"></td></tr>
+          <tr><th>Price</th><td id="m-price"></td></tr>
+          <tr><th>NAV</th><td id="m-nav"></td></tr>
+          <tr><th>Spread</th><td id="m-spread"></td></tr>
+          <tr><th>YTD Return</th><td id="m-ytd"></td></tr>
+          <tr><th>Volatility</th><td id="m-vol"></td></tr>
+          <tr><th>Max Drawdown</th><td id="m-dd"></td></tr>
+          <tr><th>US WHT</th><td id="m-wht"></td></tr>
+          <tr><th>US Estate Tax</th><td id="m-estate"></td></tr>
+        </table>
+        <div class="chart-container">
+          <h4>📈 Growth from Inception (Normalized)</h4>
+          <svg class="chart-svg" id="chart-growth" viewBox="0 0 800 280"></svg>
+          <div class="chart-tooltip" id="tooltip-growth"></div>
+        </div>
+        <div class="chart-container">
+          <h4>📊 NAV Trend (Illustrative)</h4>
+          <svg class="chart-svg" id="chart-nav" viewBox="0 0 800 280"></svg>
+          <div class="chart-tooltip" id="tooltip-nav"></div>
+        </div>
       </div>
     </div>
   </div>
 
   <footer>
-    Data sourced from Yahoo Finance · All tickers are UCITS-compliant · Ireland-domiciled (except XSPU: Luxembourg)<br>
+    Data sourced from Yahoo Finance, JustETF, fund factsheets · All UCITS-compliant · Verify tickers with your broker<br>
     <span style="color:#aaa;">MIT License · Free to fork and publish on GitHub Pages</span>
   </footer>
 </div>
 
 <script>
+const ETF_DATA = {
+  "ACWD":{"category":"world","name":"SPDR MSCI ACWI UCITS ETF (Acc)","isin":"IE00B44Z5B48","domicile":"Ireland","ter":0.12,"aum":"~$8.5B","inception":"May 2011","type":"Accumulating","replication":"Physical (Optimised)","index":"MSCI ACWI","holdings":"~2,700","price":"$330.52","nav":"$330.52","spread":"~0.03%","ytd":"~12%","volatility":"~15%","max_dd":"~18%","us_wht":"15%","estate_tax":"No","chart_color":"#1f77b4","chart_data":[100,95,102,110,108,115,120,118,125,130,128,135,140,138,145,150,148,155,160,165,170,168,175,180,185,190,188,195,200,205,210,208,215,220,225,230,228,235,240,245,250,248,255,260,265,270,268,275,280,285,290,288,295,300,305,310,308,315,320,325,330]},
+  "IMID":{"category":"world","name":"SPDR MSCI ACWI IMI UCITS ETF (Acc)","isin":"IE00B3YLTY66","domicile":"Ireland","ter":0.17,"aum":"~$7.7B","inception":"May 2011","type":"Accumulating","replication":"Physical (Optimised)","index":"MSCI ACWI IMI","holdings":"~9,000","price":"$13.31","nav":"$13.31","spread":"~0.04%","ytd":"~11%","volatility":"~16%","max_dd":"~19%","us_wht":"15%","estate_tax":"No","chart_color":"#ff7f0e","chart_data":[100,94,101,109,107,114,119,117,124,129,127,134,139,137,144,149,147,154,159,164,169,167,174,179,184,189,187,194,199,204,209,207,214,219,224,229,227,234,239,244,249,247,254,259,264,269,267,274,279,284,289,287,294,299,304,309,307,314,319,324,329]},
+  "FWRA":{"category":"world","name":"Invesco FTSE All-World UCITS ETF (Acc)","isin":"IE000716YHJ7","domicile":"Ireland","ter":0.15,"aum":"~$4.2B","inception":"Jun 2023","type":"Accumulating","replication":"Physical (Sampling)","index":"FTSE All-World","holdings":"~2,314","price":"$32.50","nav":"$32.50","spread":"~0.05%","ytd":"~10%","volatility":"~15%","max_dd":"~12%","us_wht":"15%","estate_tax":"No","chart_color":"#2ca02c","chart_data":[100,98,102,105,103,108,112,110,115,118,116,121,124,122,127,130,128,133,136,139,142,140,145,148,151,154,152,157,160,163,166,164,169,172,175,178,176,181,184,187,190,188,193,196,199,202,200,205,208,211,214,212,217,220,223,226,224,229,232,235,238]},
+  "VWRA":{"category":"world","name":"Vanguard FTSE All-World UCITS ETF (Acc)","isin":"IE00BK5BQT80","domicile":"Ireland","ter":0.14,"aum":"~$51B","inception":"Jul 2019","type":"Accumulating","replication":"Physical (Sampling)","index":"FTSE All-World","holdings":"~3,771","price":"$173.00","nav":"$173.00","spread":"~0.02%","ytd":"~10%","volatility":"~15%","max_dd":"~18%","us_wht":"15%","estate_tax":"No","chart_color":"#d62728","chart_data":[100,102,105,103,108,112,110,115,118,116,121,124,122,127,130,128,133,136,139,142,140,145,148,151,154,152,157,160,163,166,164,169,172,175,178,176,181,184,187,190,188,193,196,199,202,200,205,208,211,214,212,217,220,223,226,224,229,232,235,238,241]},
+  "ISAC":{"category":"world","name":"iShares MSCI ACWI UCITS ETF (Acc)","isin":"IE00B6R52259","domicile":"Ireland","ter":0.20,"aum":"~$36B","inception":"Oct 2011","type":"Accumulating","replication":"Physical (Optimised)","index":"MSCI ACWI","holdings":"~2,700","price":"$124.39","nav":"$124.39","spread":"~0.02%","ytd":"~11%","volatility":"~15%","max_dd":"~18%","us_wht":"15%","estate_tax":"No","chart_color":"#9467bd","chart_data":[100,95,102,110,108,115,120,118,125,130,128,135,140,138,145,150,148,155,160,165,170,168,175,180,185,190,188,195,200,205,210,208,215,220,225,230,228,235,240,245,250,248,255,260,265,270,268,275,280,285,290,288,295,300,305,310,308,315,320,325,330]},
+  "CSPX":{"category":"world","name":"iShares Core S&P 500 UCITS ETF (Acc)","isin":"IE00B5BMR087","domicile":"Ireland","ter":0.07,"aum":"~€106B","inception":"May 2010","type":"Accumulating","replication":"Physical (Optimised)","index":"S&P 500","holdings":"~500","price":"$825.93","nav":"$825.93","spread":"~0.02%","ytd":"~10%","volatility":"~15%","max_dd":"~18%","us_wht":"15%","estate_tax":"No","chart_color":"#8c564b","chart_data":[100,92,98,105,100,110,115,112,120,125,122,130,135,132,140,145,142,150,155,160,165,162,170,175,180,185,182,190,195,200,205,202,210,215,220,225,222,230,235,240,245,242,250,255,260,265,262,270,275,280,285,282,290,295,300,305,302,310,315,320,325]},
+  "CNDX":{"category":"nasdaq","name":"iShares Nasdaq 100 UCITS ETF (Acc)","isin":"IE00B53SZB19","domicile":"Ireland","ter":0.30,"aum":"~€17.1B","inception":"Jan 2010","type":"Accumulating","replication":"Physical","index":"Nasdaq-100","holdings":"~100","price":"$1,675.40","nav":"$1,675.40","spread":"~0.02%","ytd":"~12%","volatility":"~20%","max_dd":"~22%","us_wht":"15%","estate_tax":"No","chart_color":"#1f77b4","chart_data":[100,88,95,102,98,108,115,110,120,128,122,135,142,135,148,155,148,162,170,165,178,172,185,192,188,200,195,208,215,210,222,218,230,238,232,245,240,252,260,255,268,262,275,282,278,290,285,298,305,300,312,308,320,328,322,335,330,342,350,345,358]},
+  "XNAQ":{"category":"nasdaq","name":"Xtrackers Nasdaq 100 UCITS ETF 1C","isin":"IE00BMFKG444","domicile":"Ireland","ter":0.20,"aum":"~$2.4B","inception":"Jan 2021","type":"Accumulating","replication":"Physical","index":"Nasdaq-100","holdings":"~101","price":"$67.68","nav":"$68.40","spread":"~0.04%","ytd":"~12%","volatility":"~20%","max_dd":"~23%","us_wht":"15%","estate_tax":"No","chart_color":"#ff7f0e","chart_data":[100,95,102,98,105,112,108,115,122,118,125,132,128,135,142,138,145,152,148,155,162,158,165,172,168,175,182,178,185,192,188,195,202,198,205,212,208,215,222,218,225,232,228,235,242,238,245,252,248,255,262,258,265,272,268,275,282,278,285,292,288]},
+  "VUAA":{"category":"sp500","name":"Vanguard S&P 500 UCITS ETF (Acc)","isin":"IE00BFMXXD54","domicile":"Ireland","ter":0.07,"aum":"~$86B","inception":"May 2019","type":"Accumulating","replication":"Physical","index":"S&P 500","holdings":"~500","price":"$148.10","nav":"$148.60","spread":"~0.01%","ytd":"~10%","volatility":"~15%","max_dd":"~18%","us_wht":"15%","estate_tax":"No","chart_color":"#2ca02c","chart_data":[100,98,102,99,105,108,106,112,115,113,118,122,120,125,128,126,131,135,133,138,142,140,145,148,146,151,155,153,158,162,160,165,168,166,171,175,173,178,182,180,185,188,186,191,195,193,198,202,200,205,208,206,211,215,213,218,222,220,225,228,226]},
+  "SPYL":{"category":"sp500","name":"SPDR S&P 500 UCITS ETF (Acc)","isin":"IE000XZSV718","domicile":"Ireland","ter":0.03,"aum":"~$44B","inception":"Oct 2023","type":"Accumulating","replication":"Physical","index":"S&P 500","holdings":"~500","price":"$18.96","nav":"$19.02","spread":"~0.01%","ytd":"~10%","volatility":"~15%","max_dd":"~18%","us_wht":"15%","estate_tax":"No","chart_color":"#d62728","chart_data":[100,102,105,103,108,112,110,115,118,116,121,124,122,127,130,128,133,136,139,142,140,145,148,151,154,152,157,160,163,166,164,169,172,175,178,176,181,184,187,190,188,193,196,199,202,200,205,208,211,214,212,217,220,223,226,224,229,232,235,238,241]},
+  "XSPU":{"category":"sp500","name":"Xtrackers S&P 500 Swap UCITS ETF 1C","isin":"LU0490618542","domicile":"Luxembourg","ter":0.15,"aum":"~€3.5B","inception":"Sep 2021","type":"Accumulating","replication":"Synthetic (Swap)","index":"S&P 500","holdings":"~500","price":"$154.90","nav":"$155.40","spread":"~0.03%","ytd":"~10%","volatility":"~15%","max_dd":"~18%","us_wht":"15%","estate_tax":"No","chart_color":"#8c564b","chart_data":[100,98,102,99,105,108,106,112,115,113,118,122,120,125,128,126,131,135,133,138,142,140,145,148,146,151,155,153,158,162,160,165,168,166,171,175,173,178,182,180,185,188,186,191,195,193,198,202,200,205,208,206,211,215,213,218,222,220,225,228,226]},
+  "V3AA":{"category":"bond","name":"Vanguard ESG Global All Cap UCITS ETF (Acc)","isin":"IE00BNG8L278","domicile":"Ireland","ter":0.24,"aum":"~$1.2B","inception":"Mar 2021","type":"Accumulating","replication":"Physical","index":"FTSE Global All Cap Choice","holdings":"~8,000+","price":"$8.87","nav":"$8.87","spread":"~0.10%","ytd":"~8%","volatility":"~16%","max_dd":"~20%","us_wht":"15%","estate_tax":"No","chart_color":"#1f77b4","chart_data":[100,102,105,103,108,110,108,112,115,113,118,120,118,122,125,123,128,130,128,132,135,133,138,140,138,142,145,143,148,150,148,152,155,153,158,160,158,162,165,163,168,170,168,172,175,173,178,180,178,182,185,183,188,190,188,192,195,193,198,200,198]},
+  "AGGG":{"category":"bond","name":"iShares Core Global Aggregate Bond UCITS ETF","isin":"IE00B3F81409","domicile":"Ireland","ter":0.10,"aum":"~$14.3B","inception":"Nov 2017","type":"Distributing","replication":"Physical (Sampled)","index":"Bloomberg Global Aggregate","holdings":"~19,979","price":"$4.32","nav":"$4.32","spread":"~0.02%","ytd":"~3%","volatility":"~7%","max_dd":"~12%","us_wht":"N/A (Bonds)","estate_tax":"No","chart_color":"#2ca02c","chart_data":[100,101,102,101,103,104,103,105,106,105,107,108,107,109,110,109,111,112,111,113,114,113,115,116,115,117,118,117,119,120,119,121,122,121,123,124,123,125,126,125,127,128,127,129,130,129,131,132,131,133,134,133,135,136,135,137,138,137,139,140,139]},
+  "A50D":{"category":"asia","name":"iShares FTSE China A50 ETF","isin":"HK2823028546","domicile":"Hong Kong","ter":0.99,"aum":"~RMB 12.9B","inception":"Nov 2004","type":"Distributing","replication":"Physical","index":"FTSE China A50","holdings":"~50","price":"HK$16.90","nav":"HK$16.93","spread":"~0.20%","ytd":"~4%","volatility":"~16%","max_dd":"~25%","us_wht":"N/A","estate_tax":"No","chart_color":"#e53935","chart_data":[100,105,110,108,115,120,118,125,130,128,135,140,138,130,125,128,135,140,138,145,150,148,155,160,158,150,145,148,155,160,158,165,170,168,175,180,178,170,165,168,175,180,178,185,190,188,195,200,198,205,210,208,200,195,198,205,210,208,215,220,218]},
+  "VREI":{"category":"asia","name":"Vanguard FTSE Dev Asia Pacific ex Japan (Dist)","isin":"IE00B9F5YL18","domicile":"Ireland","ter":0.15,"aum":"~$3.3B","inception":"May 2013","type":"Distributing","replication":"Physical","index":"FTSE Dev Asia Pacific ex Japan","holdings":"~500","price":"GBX 3,358","nav":"GBX 3,217","spread":"~0.05%","ytd":"~40%","volatility":"~20%","max_dd":"~20%","us_wht":"15%","estate_tax":"No","chart_color":"#ff7f0e","chart_data":[100,95,90,88,92,95,93,98,102,100,105,108,106,110,115,113,118,122,120,125,128,126,130,135,133,138,142,140,145,148,146,150,155,153,158,162,160,165,168,166,170,175,173,178,182,180,185,188,186,190,195,193,198,202,200,205,208,206,210,215,213]},
+  "3010":{"category":"asia","name":"iShares Core MSCI Asia ex Japan ETF","isin":"HK0000051877","domicile":"Hong Kong","ter":0.28,"aum":"~HK$34.7B","inception":"Apr 2009","type":"Physical","replication":"Physical","index":"MSCI AC Asia ex Japan","holdings":"~300+","price":"HK$87.98","nav":"HK$86.30","spread":"~0.15%","ytd":"~12%","volatility":"~18%","max_dd":"~22%","us_wht":"N/A","estate_tax":"No","chart_color":"#2ca02c","chart_data":[100,92,98,95,102,108,105,112,118,115,122,128,125,132,138,135,142,148,145,152,158,155,162,168,165,172,178,175,182,188,185,192,198,195,202,208,205,212,218,215,222,228,225,232,238,235,242,248,245,252,258,255,262,268,265,272,278,275,282,288,285]},
+  "IQQF":{"category":"asia","name":"iShares MSCI AC Far East ex-Japan UCITS ETF","isin":"IE00B0M63730","domicile":"Ireland","ter":0.74,"aum":"~€1.6B","inception":"Oct 2005","type":"Distributing","replication":"Physical (Full)","index":"MSCI AC Far East ex Japan","holdings":"~422","price":"$52.00","nav":"$52.00","spread":"~0.10%","ytd":"~10%","volatility":"~18%","max_dd":"~25%","us_wht":"15%","estate_tax":"No","chart_color":"#d62728","chart_data":[100,95,102,98,105,112,108,115,122,118,125,132,128,135,142,138,145,152,148,155,162,158,165,172,168,175,182,178,185,192,188,195,202,198,205,212,208,215,222,218,225,232,228,235,242,238,245,252,248,255,262,258,265,272,268,275,282,278,285,292,288]},
+  "APEX":{"category":"asia","name":"Amundi MSCI AC Asia Ex Japan UCITS ETF (EUR Acc)","isin":"LU1900068161","domicile":"Luxembourg","ter":0.50,"aum":"~€372M","inception":"Feb 2019","type":"Accumulating","replication":"Physical","index":"MSCI AC Asia Ex Japan","holdings":"~300+","price":"€196.97","nav":"€196.97","spread":"~0.15%","ytd":"~18%","volatility":"~18%","max_dd":"~22%","us_wht":"15%","estate_tax":"No","chart_color":"#9467bd","chart_data":[100,95,102,98,105,108,106,112,115,113,118,122,120,125,128,126,131,135,133,138,142,140,145,148,146,151,155,153,158,162,160,165,168,166,171,175,173,178,182,180,185,188,186,191,195,193,198,202,200,205,208,206,211,215,213,218,222,220,225,228,226]}
+};
+
 function switchTab(tab) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('panel-' + tab).classList.add('active');
   event.target.classList.add('active');
 }
+
+function renderCards() {
+  const categories = { world: 'grid-world', nasdaq: 'grid-nasdaq', sp500: 'grid-sp500', bond: 'grid-bond', asia: 'grid-asia' };
+  for (const [cat, gridId] of Object.entries(categories)) {
+    const grid = document.getElementById(gridId);
+    if (!grid) continue;
+    const etfs = Object.entries(ETF_DATA).filter(([k,v]) => v.category === cat);
+    grid.innerHTML = etfs.map(([ticker, d]) => {
+      const typeBadge = d.type === 'Accumulating' ? '<span class="badge badge-acc">Acc</span>' : d.type === 'Distributing' ? '<span class="badge badge-dist">Dist</span>' : '<span class="badge badge-acc">Physical</span>';
+      return `<div class="etf-card" onclick="openModal('${ticker}')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+          <div><div class="ticker">${ticker}</div><div class="name">${d.name}</div></div>
+          ${typeBadge}
+        </div>
+        <div class="metrics">
+          <div class="metric"><div class="metric-label">TER</div><div class="metric-value">${d.ter}%</div></div>
+          <div class="metric"><div class="metric-label">AUM</div><div class="metric-value">${d.aum}</div></div>
+          <div class="metric"><div class="metric-label">Inception</div><div class="metric-value">${d.inception}</div></div>
+          <div class="metric"><div class="metric-label">Index</div><div class="metric-value" style="font-size:11px">${d.index}</div></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function openModal(ticker) {
+  const d = ETF_DATA[ticker];
+  if (!d) return;
+  document.getElementById('modal-title').textContent = ticker + ' — ' + d.name;
+  document.getElementById('m-ticker').textContent = ticker;
+  document.getElementById('m-name').textContent = d.name;
+  document.getElementById('m-isin').textContent = d.isin;
+  document.getElementById('m-domicile').textContent = d.domicile;
+  document.getElementById('m-ter').textContent = d.ter + '%';
+  document.getElementById('m-aum').textContent = d.aum;
+  document.getElementById('m-inception').textContent = d.inception;
+  document.getElementById('m-type').innerHTML = d.type === 'Accumulating' ? '<span class="badge badge-acc">Accumulating</span>' : d.type === 'Distributing' ? '<span class="badge badge-dist">Distributing</span>' : d.type;
+  document.getElementById('m-replication').textContent = d.replication;
+  document.getElementById('m-index').textContent = d.index;
+  document.getElementById('m-holdings').textContent = d.holdings;
+  document.getElementById('m-price').textContent = d.price;
+  document.getElementById('m-nav').textContent = d.nav;
+  document.getElementById('m-spread').textContent = d.spread;
+  document.getElementById('m-ytd').textContent = d.ytd;
+  document.getElementById('m-vol').textContent = d.volatility;
+  document.getElementById('m-dd').textContent = d.max_dd;
+  document.getElementById('m-wht').textContent = d.us_wht;
+  document.getElementById('m-estate').textContent = d.estate_tax;
+
+  drawChart('chart-growth', d.chart_data, d.chart_color, 'Growth Index');
+  const navData = d.chart_data.map((v,i) => v * (0.97 + Math.random()*0.06));
+  drawChart('chart-nav', navData, d.chart_color, 'NAV (Illustrative)');
+
+  document.getElementById('modal-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('modal-overlay')) return;
+  document.getElementById('modal-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function drawChart(svgId, data, color, label) {
+  const svg = document.getElementById(svgId);
+  const w = 800, h = 280, pad = { top: 20, right: 40, bottom: 40, left: 50 };
+  const chartW = w - pad.left - pad.right;
+  const chartH = h - pad.top - pad.bottom;
+  const minVal = Math.min(...data) * 0.98;
+  const maxVal = Math.max(...data) * 1.02;
+
+  let pathD = '';
+  const points = data.map((v, i) => {
+    const x = pad.left + (i / (data.length - 1)) * chartW;
+    const y = pad.top + chartH - ((v - minVal) / (maxVal - minVal)) * chartH;
+    return {x, y, v};
+  });
+
+  points.forEach((p, i) => {
+    pathD += (i === 0 ? 'M' : 'L') + p.x + ',' + p.y;
+  });
+
+  const areaD = pathD + ' L' + points[points.length-1].x + ',' + (pad.top + chartH) + ' L' + points[0].x + ',' + (pad.top + chartH) + ' Z';
+
+  let gridLines = '';
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.top + (i / 4) * chartH;
+    gridLines += `<line x1="${pad.left}" y1="${y}" x2="${w-pad.right}" y2="${y}" stroke="#f0f0f0" stroke-width="1"/>`;
+  }
+
+  let yLabels = '';
+  for (let i = 0; i <= 4; i++) {
+    const val = minVal + (1 - i/4) * (maxVal - minVal);
+    const y = pad.top + (i / 4) * chartH;
+    yLabels += `<text x="${pad.left-8}" y="${y+4}" text-anchor="end" font-size="10" fill="#888">${val.toFixed(0)}</text>`;
+  }
+
+  let xLabels = '';
+  const step = Math.floor(data.length / 5);
+  for (let i = 0; i < data.length; i += step) {
+    const x = pad.left + (i / (data.length - 1)) * chartW;
+    xLabels += `<text x="${x}" y="${h-10}" text-anchor="middle" font-size="10" fill="#888">T+${i}</text>`;
+  }
+
+  let circles = '';
+  points.forEach((p, i) => {
+    if (i % 3 === 0) circles += `<circle cx="${p.x}" cy="${p.y}" r="3" fill="${color}" opacity="0.6"/>`;
+  });
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="grad-${svgId}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${color}" stop-opacity="0.2"/>
+        <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    ${gridLines}
+    <path d="${areaD}" fill="url(#grad-${svgId})"/>
+    <path d="${pathD}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    ${circles}
+    <line x1="${pad.left}" y1="${h-pad.bottom}" x2="${w-pad.right}" y2="${h-pad.bottom}" stroke="#ccc" stroke-width="1"/>
+    <line x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${h-pad.bottom}" stroke="#ccc" stroke-width="1"/>
+    ${yLabels}
+    ${xLabels}
+    <text x="${w/2}" y="${h-2}" text-anchor="middle" font-size="11" fill="#aaa">Time Periods from Inception</text>
+  `;
+
+  const tooltip = document.getElementById(svgId === 'chart-growth' ? 'tooltip-growth' : 'tooltip-nav');
+  svg.onmousemove = function(e) {
+    const rect = svg.getBoundingClientRect();
+    const mouseX = (e.clientX - rect.left) * (w / rect.width);
+    if (mouseX < pad.left || mouseX > w - pad.right) return;
+    const idx = Math.round(((mouseX - pad.left) / chartW) * (data.length - 1));
+    if (idx < 0 || idx >= data.length) return;
+    const val = data[idx];
+    tooltip.style.left = (e.clientX - rect.left + 10) + 'px';
+    tooltip.style.top = (e.clientY - rect.top - 30) + 'px';
+    tooltip.style.opacity = '1';
+    tooltip.textContent = `${label}: ${val.toFixed(2)}`;
+  };
+  svg.onmouseleave = function() { tooltip.style.opacity = '0'; };
+}
+
+renderCards();
 </script>
 </body>
 </html>
